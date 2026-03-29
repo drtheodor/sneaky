@@ -14,10 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientPlayerEntityMixin {
 
     @Shadow public Input input;
-
     @Shadow @Final protected MinecraftClient client;
     @Unique private boolean stickySneak = false;
-
     @Unique private int sneakTime = 0;
 
     /**
@@ -27,7 +25,7 @@ public class ClientPlayerEntityMixin {
     @Overwrite
     public boolean isSneaking() {
         boolean shouldSneak = ((IMinecraftClientMixin) this.client).sneaky$shouldSneak();
-        boolean isSneaking = this.input != null && this.input.sneaking;
+        boolean isSneaking = this.input != null && this.input.playerInput.sneak();
 
         if (SneakyConfig.shouldKeepSneak() && shouldSneak)
             this.stickySneak = true;
@@ -46,7 +44,7 @@ public class ClientPlayerEntityMixin {
         if (this.input == null)
             return;
 
-        if (this.input.sneaking) {
+        if (this.input.playerInput.sneak()) {
             this.sneakTime += 1;
         } else {
             this.sneakTime = 0;
